@@ -13,9 +13,9 @@ $==================$
 */
 
 /* REQUIRED */
-
 const sourceFolderID_SearchForShortcuts = ''
 
+/* Optional */
 const recurse_SearchForShortcuts = true
 
 /*
@@ -47,42 +47,21 @@ $==================$
 
 function start_SearchForShortcuts() {
   let source = DriveApp.getFolderById(sourceFolderID_SearchForShortcuts);
-  let folders = [];
-  let shortcuts = [];
-  folders.push(source);
 
-  function getFolderList(folder)
-  {
-    let tempFolders = folder.getFolders();
-    while (tempFolders.hasNext()){
-      let nextFolder = tempFolders.next();
-      folders.push(nextFolder);
-      getFolderList(nextFolder);
+  function printShortcuts(folder, path) {
+    path += folder.getName() + '/';
+    let shortcuts = folder.getFilesByType(MimeType.SHORTCUT);
+    while (shortcuts.hasNext()) {
+      console.log(path + (shortcuts.next()).getName());
+    }
+    if (recurse_SearchForShortcuts) {
+      let childFolders = folder.getFolders();
+      while (childFolders.hasNext()) {
+        printShortcuts(childFolders.next(), path);
+      }
     }
   }
-  if (recurse_SearchForShortcuts)
-  {
-    getFolderList(source);
-  }
-
-  folders.forEach(folder => {
-    let tempShortcuts = folder.getFilesByType(MimeType.SHORTCUT);
-    while (tempShortcuts.hasNext())
-    {
-      shortcuts.push(tempShortcuts.next());
-    }
-  })
-
-  shortcuts.forEach(shortcut => {
-    let path = shortcut.getName();
-    let parent = (shortcut.getParents()).next();
-    while (parent.getId() != sourceFolderID_SearchForShortcuts)
-    {
-      path = parent.getName() + '/' + path;
-      parent = (parent.getParents()).next();
-    }
-    path = parent.getName() + '/' + path;
-    console.log('Found ' + path);
-  })
+  console.log('Looking for shortcuts in ' + source.getName() + "...");
+  printShortcuts(source, '> ')
 
 }
