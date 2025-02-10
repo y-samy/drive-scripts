@@ -13,12 +13,12 @@ $==================$
 */
 
 /* REQUIRED */
-
 const sourceFolderID_BatchRename = ''
 
-const query_BatchRename   = '' // String or RegExp literal
+const query_BatchRename = '' // String or RegExp literal
 const replace_BatchRename = '' // String or RegExp literal
 
+/* OPTIONAL */
 const replaceAllInstances_BatchRename = false
 
 /*
@@ -49,7 +49,7 @@ function start_BatchRename() {
   var folder = DriveApp.getFolderById(sourceFolderID_BatchRename);
   var files = folder.getFiles();
   let replaceFunc = (replaceAllInstances_BatchRename) ? String.prototype.replaceAll : String.prototype.replace;
-  while(files.hasNext()){
+  while (files.hasNext()) {
     var file = files.next()
     var fileName = file.getName();
     if (fileName.match(query_BatchRename)) {
